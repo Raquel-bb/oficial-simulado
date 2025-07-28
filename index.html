@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulado BB - CESGRANRIO</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f8f9fa;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .alternatives label {
+      display: block;
+      margin-bottom: 8px;
+    }
+    .feedback {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .hidden {
+      display: none;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-right: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="question-container" class="question"></div>
+    <form id="quiz-form">
+      <div id="alternatives" class="alternatives"></div>
+      <button type="button" id="submit-btn">Responder</button>
+      <button type="button" id="next-btn" class="hidden">Próxima</button>
+      <div id="feedback" class="feedback hidden"></div>
+    </form>
+    <div id="final-score" class="hidden"></div>
+  </div>
+
+  <script>
+    const conhecimentosBancarios = [
+      {
+        tema: "Sistema Financeiro Nacional",
+        questoes: [ ...código das questões continua aqui... ]
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let questionRespondida = false;
+
+    const questionContainer = document.getElementById("question-container");
+    const alternativesContainer = document.getElementById("alternatives");
+    const submitBtn = document.getElementById("submit-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const feedback = document.getElementById("feedback");
+    const finalScore = document.getElementById("final-score");
+
+    const questions = conhecimentosBancarios.flatMap(t => t.questoes);
+
+    function showQuestion(index) {
+      const q = questions[index];
+      questionRespondida = false;
+      questionContainer.textContent = `Questão ${index + 1}: ${q.question}`;
+      alternativesContainer.innerHTML = "";
+      feedback.classList.add("hidden");
+      nextBtn.classList.add("hidden");
+      submitBtn.classList.remove("hidden");
+
+      q.alternatives.forEach((alt, i) => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "alternative";
+        input.value = i;
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(" " + alt));
+        alternativesContainer.appendChild(label);
+      });
+    }
+
+    submitBtn.onclick = () => {
+      if (questionRespondida) return;
+
+      const selected = document.querySelector('input[name="alternative"]:checked');
+      if (!selected) return alert("Selecione uma alternativa.");
+
+      const answer = parseInt(selected.value);
+      const q = questions[currentQuestion];
+
+      if (answer === q.correct) {
+        feedback.textContent = "✅ Resposta correta! " + q.explanation;
+        score++;
+      } else {
+        feedback.textContent = `❌ Resposta incorreta. ${q.explanation}`;
+      }
+
+      feedback.classList.remove("hidden");
+      submitBtn.classList.add("hidden");
+      nextBtn.classList.remove("hidden");
+      questionRespondida = true;
+    };
+
+    nextBtn.onclick = () => {
+      if (!questionRespondida) return;
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion(currentQuestion);
+      } else {
+        questionContainer.textContent = "Simulado finalizado!";
+        alternativesContainer.innerHTML = "";
+        feedback.classList.add("hidden");
+        nextBtn.classList.add("hidden");
+        finalScore.classList.remove("hidden");
+        finalScore.textContent = `Você acertou ${score} de ${questions.length} questões.`;
+      }
+    };
+
+    showQuestion(currentQuestion);
+  </script>
+</body>
+</html>
