@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulado Banco do Brasil</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .answers label {
+      display: block;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .explanation {
+      margin-top: 10px;
+      padding: 10px;
+      background: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      display: none;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+    #submitBtn { background-color: #007bff; color: white; }
+    #nextBtn { background-color: #28a745; color: white; display: none; }
+    #scoreSection {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Simulado Banco do Brasil</h1>
+    <div id="quiz">
+      <div class="question" id="questionText"></div>
+      <div class="answers" id="answersContainer"></div>
+      <div class="explanation" id="explanationText"></div>
+    </div>
+    <div class="controls">
+      <button id="submitBtn">Responder</button>
+      <button id="nextBtn">Próxima</button>
+    </div>
+    <div id="scoreSection"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Qual é a principal função do Conselho Monetário Nacional (CMN)?",
+        answers: [
+          "Emitir moeda",
+          "Definir a meta da inflação",
+          "Estabelecer as diretrizes da política econômica do governo",
+          "Executar operações de mercado aberto",
+          "Fiscalizar as instituições financeiras"
+        ],
+        correct: 2,
+        explanation: "O CMN estabelece diretrizes gerais das políticas monetária, creditícia e cambial do País."
+      },
+      {
+        question: "Qual órgão é responsável pela execução da política monetária no Brasil?",
+        answers: [
+          "Banco do Brasil",
+          "CMN",
+          "Tesouro Nacional",
+          "Banco Central do Brasil",
+          "CVM"
+        ],
+        correct: 3,
+        explanation: "O Banco Central executa a política monetária definida pelo CMN."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionText = document.getElementById("questionText");
+    const answersContainer = document.getElementById("answersContainer");
+    const explanationText = document.getElementById("explanationText");
+    const submitBtn = document.getElementById("submitBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const scoreSection = document.getElementById("scoreSection");
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      questionText.textContent = `(${currentQuestion + 1}) ${q.question}`;
+      answersContainer.innerHTML = "";
+      explanationText.style.display = "none";
+      q.answers.forEach((answer, index) => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+        input.type = "radio";
+        input.name = "answer";
+        input.value = index;
+        label.appendChild(input);
+        label.append(` ${answer}`);
+        answersContainer.appendChild(label);
+      });
+    }
+
+    function showExplanation(correct) {
+      const q = questions[currentQuestion];
+      explanationText.textContent = q.explanation;
+      explanationText.style.display = "block";
+      if (correct) score++;
+    }
+
+    submitBtn.addEventListener("click", () => {
+      const selected = document.querySelector("input[name='answer']:checked");
+      if (!selected) return alert("Selecione uma resposta.");
+      const answer = parseInt(selected.value);
+      const q = questions[currentQuestion];
+      showExplanation(answer === q.correct);
+      submitBtn.style.display = "none";
+      nextBtn.style.display = "inline-block";
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+        submitBtn.style.display = "inline-block";
+        nextBtn.style.display = "none";
+      } else {
+        quiz.style.display = "none";
+        scoreSection.style.display = "block";
+        scoreSection.innerHTML = `<h2>Você acertou ${score} de ${questions.length} questões.</h2>`;
+      }
+    });
+
+    loadQuestion();
+  </script>
+</body>
+</html>
